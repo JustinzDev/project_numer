@@ -33,6 +33,21 @@ const Navbartop = () => {
                                         False Position
                                     </Link>
                                 </li>
+                                <li>
+                                    <Link to="/onepoint" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-800">
+                                        One Point
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/newtonraphson" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-800">
+                                        Newton Raphson
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/secant" className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white text-gray-800">
+                                        Secant
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
                     </li>

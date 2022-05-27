@@ -55,7 +55,7 @@ const Bisection = () => {
                 Swal.fire({
                     position: 'top-end',
                     icon: 'error',
-                    title: 'Token ของสมการหมดอายุแล้ว',
+                    title: 'Token ของสมการ Bisection หมดอายุแล้ว',
                     showConfirmButton: false,
                     timer: 2000
                 })
@@ -96,11 +96,13 @@ const Bisection = () => {
     const handleSumit = async (e) => {
         e.preventDefault()
 
+        console.log(FxText.fx)
+
         const parseFx = math.parse(FxText.fx) //เช็คว่ามีตัวแปรอะไรที่ติดอยู่ในสมการ
-        const bisectionCompile = parseFx.compile()
+        const CompileFx = parseFx.compile()
         let scope = { x: 0 }
 
-        let xL = data.xL, xR = data.xR, xM
+        let xL = Number(data.xL), xR = Number(data.xR), xM
         let fxL, fxR, fxM
         let eps, y = 0.000001
         let loop = true
@@ -116,47 +118,74 @@ const Bisection = () => {
             }
         }
 
-        while(loop){
-            scope.x = xL
-            fxL = bisectionCompile.evaluate(scope)
-            scope.x = xR
-            fxR = bisectionCompile.evaluate(scope)
+        scope.x = xL
+        fxL = CompileFx.evaluate(scope)
+        scope.x = xR
+        fxR = CompileFx.evaluate(scope)
 
-            if(fxL === undefined || fxR === undefined) {
-                loop = false
-                setcheckError(true)
-                return
-            } else if(xL === 0 || xR === 0){
-                loop = false
-                setcheckError(true)
-                return
+        if((fxL < 0 && fxR > 0) || (fxL > 0 && fxR < 0)){
+            while(loop){
+                scope.x = xL
+                fxL = CompileFx.evaluate(scope)
+                scope.x = xR
+                fxR = CompileFx.evaluate(scope)
+
+                if(fxL === undefined || fxR === undefined) {
+                    loop = false
+                    setcheckError(true)
+                    return
+                } else if(xL === 0 || xR === 0){
+                    loop = false
+                    setcheckError(true)
+                    return
+                }
+
+                xM = (Number(xL) + Number(xR)) / 2;
+                scope.x = xM
+                fxM = CompileFx.evaluate(scope);
+                cal(fxM, fxR)
+
+                dataTable.push({
+                    xL: xL,
+                    xR: xR,
+                    xM: xM,
+                    Err: eps
+                })
+
+                if(eps >= ((-1) * y) && eps <= y) {
+                    loop = false
+                    setData({
+                        xL: data.xL,
+                        xR: data.xR,
+                        result: true,
+                        sum: xM.toFixed(6)
+                    })
+                    setcheckError(false)
+                    CreateGraph(xM.toFixed(6))
+                }
             }
-
-            xM = (Number(xL) + Number(xR)) / 2;
-            scope.x = xM
-            fxM = bisectionCompile.evaluate(scope);
-            cal(fxM, fxR)
-
-            dataTable.push({
-                xL: xL,
-                xR: xR,
-                xM: xM,
-                Err: eps
+        } else if(fxL === 0){
+            setData({
+                xL: data.xL,
+                xR: data.xR,
+                result: true,
+                sum: xL.toFixed(6)
             })
-
-            if(eps >= ((-1) * y) && eps <= y) {
-                loop = false
-                CreateGraph(xM.toFixed(6))
-                setcheckError(false)
-            }
+        } else if(fxR === 0){
+            setData({
+                xL: data.xL,
+                xR: data.xR,
+                result: true,
+                sum: xR.toFixed(6)
+            })
+        } else {
+            setData({
+                xL: data.xL,
+                xR: data.xR,
+                result: true,
+                sum: 0
+            })
         }
-        
-        setData({
-            xL: data.xL,
-            xR: data.xR,
-            result: true,
-            sum: xM.toFixed(6)
-        })
 
         setDataInfo(
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -238,34 +267,25 @@ const Bisection = () => {
                         <form onSubmit={handleSumit}>
                             <div className="mb-2 mx-auto">
                                 <div className="flex items-center border-b-2 border-gray-300 py-2 w-1/4 mx-auto">
-                                    {!FxText.fxisrandom &&
-                                        <EditableMathField
-                                            className="mathquill-example-field MathField-class appearance-none bg-transparent w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-                                            latex={FxText.latex}
-                                            onChange={(mathField) => {
-                                                setText({
-                                                    title: FxText.title,
-                                                    fx: mathField.text(),
-                                                    latex: mathField.latex()
-                                                })
-                                            }}
-                                            mathquillDidMount={(mathField) => {
-                                                setText({
-                                                    title: FxText.title,
-                                                    fx: mathField.text(),
-                                                    latex: mathField.latex()
-                                                })
-                                            }}
-                                            style={{border: "0px", margin: "auto"}}
-                                        />
-                                    }
-                                    {FxText.fxisrandom &&
                                     <EditableMathField
-                                            className="mathquill-example-field MathField-class appearance-none bg-transparent w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-                                            latex={FxText.latex}
-                                            style={{border: "0px", margin: "auto"}}
-                                        />
-                                    }
+                                        className="mathquill-example-field MathField-class appearance-none bg-transparent w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
+                                        latex={FxText.latex}
+                                        onChange={(mathField) => {
+                                            setText({
+                                                title: FxText.title,
+                                                fx: mathField.text(),
+                                                latex: mathField.latex()
+                                            })
+                                        }}
+                                        mathquillDidMount={(mathField) => {
+                                            setText({
+                                                title: FxText.title,
+                                                fx: mathField.text(),
+                                                latex: mathField.latex()
+                                            })
+                                        }}
+                                        style={{border: "0px", margin: "auto"}}
+                                    />
                                     <button onClick={handleRandomFx} className="flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-white py-1 px-2 rounded" type="button">
                                     Random
                                     </button>

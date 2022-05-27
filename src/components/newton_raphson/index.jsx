@@ -7,7 +7,6 @@ import axios from 'axios'
 
 import { addStyles, EditableMathField } from 'react-mathquill'
 import { create, all } from 'mathjs'
-
 import Swal from 'sweetalert2'
 
 addStyles()
@@ -15,12 +14,12 @@ addStyles()
 const config = { }
 const math = create(all, config)
 
-const FalsePosition = () => {
+const NewtonRaphson = () => {
 
     let calculator = null
 
     const [FxText, setText] = useState({
-        title: 'falseposition',
+        title: 'newtonraphson',
         fx: '',
         latex: '',
         fxisrandom: false
@@ -31,8 +30,7 @@ const FalsePosition = () => {
     let dataTable = []
 
     const [data, setData] = useState({
-        xL: '',
-        xR: '',
+        x: '',
         result: false,
         sum: 0
     })
@@ -46,7 +44,7 @@ const FalsePosition = () => {
             console.log(data_token)
             const url = "http://localhost:4000/api/rootofeq/auth_datatoken";
             const { data: res } = await axios.post(url, { token: data_token })
-            if(res.token.title === 'falseposition'){
+            if(res.token.title === 'newtonraphson'){
                 setText({
                     title: res.token.title,
                     fx: res.token.fx,
@@ -63,11 +61,11 @@ const FalsePosition = () => {
                 Swal.fire({
                     position: 'top-end',
                     icon: 'error',
-                    title: 'Token ของสมการ False Position หมดอายุแล้ว',
+                    title: 'Token ของสมการ Newton Raphson หมดอายุแล้ว',
                     showConfirmButton: false,
                     timer: 2000
                 })
-                localStorage.removeItem('data_token_falseposition')
+                localStorage.removeItem('data_token_newtonraphson')
                 console.log(error.response.data)
             }
         }
@@ -76,10 +74,10 @@ const FalsePosition = () => {
     const handleRandomFx = async (e) => {
         e.preventDefault()
         try {
-            const url = "http://localhost:4000/api/rootofeq/randomfx/falseposition";
+            const url = "http://localhost:4000/api/rootofeq/randomfx/newtonraphson";
             const { data: res } = await axios.get(url, FxText)
             console.log(res)
-            localStorage.setItem('data_token_falseposition', res.token)
+            localStorage.setItem('data_token_newtonraphson', res.token)
             setText({
                 title: res.data.title,
                 fx: res.data.fx,
@@ -101,8 +99,7 @@ const FalsePosition = () => {
         e.preventDefault()
         
         setData({
-            xL: data.xL,
-            xR: data.xR,
+            x: data.x,
             result: true,
             sum: 0
         })
@@ -110,73 +107,38 @@ const FalsePosition = () => {
         const parseFx = math.parse(FxText.fx)
         const CompileFx = parseFx.compile()
         let scope = { x: 0 }
+        let xold = Number(data.x)
 
-        let xL = data.xL, xR = data.xR, x1, fxL, fxR, fx1, eps
-
-        const cal = (fx1, fxR) => {
-            if(fx1 * fxR < 0){
-                eps = Math.abs((Number(x1) - Number(xL)) / x1)
-                xL = x1
-                console.log("xL = x1")
-                console.log("epsilon = " + eps.toFixed(6) + "\n")
-            }
-            else{
-                eps = Math.abs((Number(x1) - Number(xR)) / x1)
-                xR = x1
-                console.log("xR = x1")
-                console.log("epsilon = " + eps.toFixed(6) + "\n")
-            }
-        }
-
-        let i = 0
+        let xnew = 0
 
         while(true){
-            scope.x = xL
-            fxL = CompileFx.evaluate(scope)
-            scope.x = xR
-            fxR = CompileFx.evaluate(scope)
+            scope.x = xold
+            let fxold = CompileFx.evaluate(scope)
+            let fxdif = math.derivative(FxText.fx, "x").evaluate({ x: xold })
+            xnew = xold - fxold / fxdif
+            let eps = Math.abs((xnew - xold) / xnew);
+            xold = xnew;
 
-            if(fxL === undefined || fxR === undefined) {
-                setcheckError(true)
-                break
-            } else if(xL === 0 || xR === 0){
-                setcheckError(true)
+            if(eps >= ((-1) * 0.000001) && eps <= 0.000001) {
+                CreateGraph(xnew)
+                setcheckError(false)
                 break
             }
 
-            console.log("f(xL) = ", fxL.toFixed(6))
-            console.log("f(xR) = ", fxR.toFixed(6))
-
-            x1 = (Number((xL * fxR)) - Number((xR * fxL))) / (fxR - fxL)
-            console.log("x1 = ", x1.toFixed(6))
-
-            scope.x = x1
-            fx1 = CompileFx.evaluate(scope)
-            console.log("f(x1) = ", fx1.toFixed(6))
-
-            cal(fx1, fxR)
+            console.log(xold)
+            console.log(xnew)
 
             dataTable.push({
-                xL: xL,
-                xR: xR,
-                x1: x1,
+                xold: xold,
+                xnew: xnew,
                 Err: eps
             })
-
-            i ++
-            if(i >= 5) break
-            if(eps >= ((-1) * 0.000001) && eps <= 0.000001){
-                CreateGraph(x1)
-                setcheckError(false)
-                break
-            } 
         }
 
         setData({
-            xL: data.xL,
-            xR: data.xR,
+            x: data.x,
             result: true,
-            sum: x1.toFixed(6)
+            sum: xnew.toFixed(6)
         })
 
         setTable(
@@ -185,9 +147,8 @@ const FalsePosition = () => {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                     <tr>
                     <th scope="col" className="px-6 py-3">Iteration</th>
-                    <th scope="col" className="px-6 py-3">XL</th>
-                    <th scope="col" className="px-6 py-3">XR</th>
-                    <th scope="col" className="px-6 py-3">X1</th>
+                    <th scope="col" className="px-6 py-3">XOLD</th>
+                    <th scope="col" className="px-6 py-3">XNEW</th>
                     <th scope="col" className="px-6 py-3">Error</th>
                     </tr>
                 </thead>
@@ -198,9 +159,8 @@ const FalsePosition = () => {
                                 <Fragment key={i}>
                                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                         <th scope="row" className="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">{i+1}</th>
-                                        <td className="px-6 py-4">{data.xL}</td>
-                                        <td className="px-6 py-4">{data.xR}</td>
-                                        <td className="px-6 py-4">{data.x1}</td>
+                                        <td className="px-6 py-4">{data.xold}</td>
+                                        <td className="px-6 py-4">{data.xnew}</td>
                                         <td className="px-6 py-4">{data.Err}</td>
                                     </tr>
                                 </Fragment>
@@ -237,18 +197,18 @@ const FalsePosition = () => {
     }
 
     useEffect(() => {
-        const data_token = localStorage.getItem('data_token_falseposition')
+        const data_token = localStorage.getItem('data_token_newtonraphson')
         if(data_token) AuthToken(data_token)
     }, [])
 
     return(
         <HelmetProvider>
             <Helmet>
-                <title>False Position</title>
+                <title>Newton Raphson</title>
             </Helmet>
             <div className='mx-auto container mt-10 mb-10'>
                 <div className="w-5/6 mx-auto p-6 bg-white rounded-lg border-t-4 border-green-500 shadow-md dark:bg-gray-800 dark:border-gray-700">
-                    <h2 className='mt-5 text-center text-xl'>False Position</h2>
+                    <h2 className='mt-5 text-center text-xl'>Newton Raphson</h2>
                     <div className='mt-10'>
                         {checkError === true &&
                             <div className="text-center text-lg w-2/4 mx-auto p-4 mb-4 text-red-700 bg-red-100 rounded-lg dark:bg-red-200 dark:text-red-800" role="alert">
@@ -263,14 +223,14 @@ const FalsePosition = () => {
                                         latex={FxText.latex}
                                         onChange={(mathField) => {
                                             setText({
-                                                title: 'falseposition',
+                                                title: 'newtonraphson',
                                                 fx: mathField.text(),
                                                 latex: mathField.latex()
                                             })
                                         }}
                                         mathquillDidMount={(mathField) => {
                                             setText({
-                                                title: 'falseposition',
+                                                title: 'newtonraphson',
                                                 fx: mathField.text(),
                                                 latex: mathField.latex()
                                             })
@@ -292,17 +252,12 @@ const FalsePosition = () => {
                             </div> */}
 
                             <div className="relative z-0 w-1/4 mx-auto mb-6 group mt-7">
-                                <input type="text" onChange={handleChange} value={data.xL} name="xL" className="block py-2.5 px-0 w-full text-lg text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer" placeholder=" " required />
-                                <label className="peer-focus:font-medium absolute text-lg text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">ค่า xL</label>
-                            </div>
-
-                            <div className="relative z-0 w-1/4 mx-auto mb-6 group">
-                                <input type="text" onChange={handleChange} value={data.xR} name="xR" className="block py-2.5 px-0 w-full text-lg text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer" placeholder=" " required />
-                                <label className="peer-focus:font-medium absolute text-lg text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">ค่า xR</label>
+                                <input type="text" onChange={handleChange} value={data.x} name="x" className="block py-2.5 px-0 w-full text-lg text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer" placeholder=" " required />
+                                <label className="peer-focus:font-medium absolute text-lg text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">ค่า x</label>
                             </div>
 
                             {
-                                data.xL !== '' && data.xR !== '' &&
+                                data.x !== '' &&
                                 <div className='text-center mt-10'>
                                     <button type="submit" className="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">คำนวณ</button>
                                 </div>
@@ -331,4 +286,4 @@ const FalsePosition = () => {
     )
 }
 
-export default FalsePosition
+export default NewtonRaphson

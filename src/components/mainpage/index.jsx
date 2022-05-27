@@ -13,6 +13,7 @@ const MainPage = () => {
                     <li>Web - React</li>
                     <li>API - Node.js And MongoDB</li>
                     <li>API + Token (key)</li>
+                    <li>CI/CD</li>
                     <li>Docker</li>
                     <li>Github</li>
                     <li>Swagger</li>

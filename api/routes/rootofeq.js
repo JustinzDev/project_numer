@@ -31,8 +31,9 @@ router.get('/randomfx/:title', async (req, res) => {
 })
 
 router.post('/savefx', async (req, res) => {
-    const { fx, latex } = req.body
+    const { fx, latex, title } = req.body
     const rootofChecking = await rootofeqModel.findOne({
+        title: title,
         fx: fx,
         latex: latex
     })
