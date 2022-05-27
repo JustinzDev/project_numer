@@ -4,14 +4,11 @@ import { Helmet, HelmetProvider } from 'react-helmet-async'
 import './index.css'
 
 import axios from 'axios'
-
 import { addStyles, EditableMathField } from 'react-mathquill'
 import { create, all } from 'mathjs'
-
 import Swal from 'sweetalert2'
 
 addStyles()
-
 const config = { }
 const math = create(all, config)
 
@@ -269,7 +266,6 @@ const Bisection = () => {
                                             style={{border: "0px", margin: "auto"}}
                                         />
                                     }
-                                    {/* <input className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none" type="text" placeholder="Jane Doe" aria-label="Full name" /> */}
                                     <button onClick={handleRandomFx} className="flex-shrink-0 bg-green-500 hover:bg-green-700 border-green-500 hover:border-green-700 text-sm border-4 text-white py-1 px-2 rounded" type="button">
                                     Random
                                     </button>
@@ -283,7 +279,6 @@ const Bisection = () => {
                                 <span>Raw text:</span>
                                 <span className="result-latex">{FxText.fx}</span>
                             </div> */}
-
                             <div className="relative z-0 w-1/4 mx-auto mb-6 group mt-7">
                                 <input type="text" onChange={handleChange} value={data.xL} name="xL" className="block py-2.5 px-0 w-full text-lg text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer" placeholder=" " required />
                                 <label className="peer-focus:font-medium absolute text-lg text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">ค่า xL</label>
@@ -308,11 +303,6 @@ const Bisection = () => {
                             </div>
                         }
                     </div>
-                    
-                    {/* <div className="mt-3 mb-1 w-50 m-auto text-center">
-                        <button type="button" className="btn btn-info mt-1 w-25" onClick={() => showDataInfo(0)}>ตาราง</button>
-                        <button type="button" className="btn btn-info mt-1 ms-2 w-25" onClick={() => showDataInfo(1)}>กราฟ</button>
-                    </div> */}
 
                     <div id="dataSum" className="mt-3 mb-1">
                         {dataInfo}
