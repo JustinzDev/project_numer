@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const path = require('path')
 const port = 4000
 require('dotenv').config()
 
@@ -18,6 +19,13 @@ const rootofEQ = require('./routes/rootofeq')
 app.use(express.json())
 app.use(cors())
 app.use(express.urlencoded({ extended: false }))
+
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static(path.join(__dirname, '../build')))
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../build/index.html'))
+  })
+}
 
 const options = {
     definition: {
