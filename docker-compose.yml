@@ -1,15 +1,15 @@
 version: '3.9'
 services:
   react:
-    build: ./client
-    ports:
-      - "80:80"
-  api:
     build: .
     ports:
-      - "4000:4000"
+      - "80:80"
     volumes:
       - .:/app
+  api:
+    build: ./api
+    ports:
+      - "4000:4000"
     command:
       sh -c "nodemon --legacy-watch index"
       
