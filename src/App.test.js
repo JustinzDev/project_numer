@@ -14,5 +14,5 @@ test('keyworkGithub', () => {
 
 test('keyworkSwagger', () => {
   render(<MainPage />)
-  expect(screen.getByText("Swagger")).toBeInTheDocument()
+  expect(screen.getByText("Swaggerg")).toBeInTheDocument()
 })
