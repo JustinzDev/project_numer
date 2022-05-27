@@ -28,7 +28,7 @@
     "server": "cd ./api && nodemon index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
-  "homepage": "http://localhost/",
+  "homepage": "https://react-numer-app.herokuapp.com/",
   "eslintConfig": {
     "extends": [
       "react-app",
