@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest #รันโดย base on ubuntu เวอร์ชั่นล่าสุด
 
     strategy:
-      node-version: [10.x, 12.x, 14.x] # ซึ่งเราได้เลือกมาทั้งหมด 3 versions ของ node
+      nodeversion: [10.x, 12.x, 14.x] # ซึ่งเราได้เลือกมาทั้งหมด 3 versions ของ node
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ node-version }}
+      - name: Use Node.js ${{ nodeversion }}
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ node-version }}
+          node-version: ${{ nodeversion }}
       - run: npm ci # ทำการรัน CI
       - run: npm build # ทำการ build production
       - run: npm test # เช็ค test case ต่างๆ หา error
