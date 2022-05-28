@@ -6,12 +6,17 @@ test('keywordDocker', () => {
   expect(screen.getByText("Docker")).toBeInTheDocument()
 })
 
-test('keyworkGithub', () => {
+test('keywordGithub', () => {
   render(<MainPage />)
   expect(screen.getByText("Github")).toBeInTheDocument()
 })
 
-test('keyworkSwagger', () => {
+test('keywordSwagger', () => {
   render(<MainPage />)
   expect(screen.getByText("Swagger")).toBeInTheDocument()
+})
+
+test('keywordDatabase', () => {
+  render(<MainPage />)
+  expect(screen.getByText(/Database MongoDB/i)).toBeInTheDocument()
 })
