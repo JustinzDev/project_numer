@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix: # ตัวช่วยในการสร้างการรันงานได้หลายรายการ
-        node-version: [10.x, 12.x, 14.x] # ซึ่งเลือกมาทั้งหมด 4 versions ของ node
+        node-version: [10.x, 12.x, 14.x] # ซึ่งเลือกมาทั้งหมด 3 versions ของ node
 
     steps:
       - uses: actions/checkout@v2
