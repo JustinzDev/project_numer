@@ -1,24 +1,25 @@
+# Workflows นี้จะทำการติดตั้งขึ้นต่อกันของโหนดใหม่ทั้งหมด สร้างซอร์สโค้ด และ รันการทดสอบในเวอร์ชันต่างๆ ของ node
 name: Node.js CI
 
 on:
-  push:
+  push: # การ push workflows ขึ้นไปทำงานที่ branch ไหน?
     branches: [main]
-  pull_request:
+  pull_request: # การ pull workflows กลับมาจาก branch ไหน?
     branches: [main]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest #รันโดย base on ubuntu เวอร์ชั่นล่าสุด
 
     strategy:
-      matrix:
-        node-version: [10.x, 12.x, 14.x]
+      node-version: [10.x, 12.x, 14.x] # ซึ่งเราได้เลือกมาทั้งหมด 3 versions ของ node
+
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js ${{ node-version }}
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm ci
-      - run: npm build
-      - run: npm test
+          node-version: ${{ node-version }}
+      - run: npm ci # ทำการรัน CI
+      - run: npm build # ทำการ build production
+      - run: npm test # เช็ค test case ต่างๆ หา error

@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import "@testing-library/jest-dom";
 import MainPage from './components/mainpage'
 
 test('keywordDocker', () => {
