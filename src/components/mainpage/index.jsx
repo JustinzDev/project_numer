@@ -12,15 +12,14 @@ const MainPage = () => {
                     <a href="/">
                         <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Numerical Methods 2/64</h5>
                     </a>
-                    <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">สอนโดย ผู้ช่วยศาสตราจารย์ ดร. สุวัจชัย กมลสันติโรจน์ (SWK)</p>
                     <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">โปรเจค Scope ที่มี</p>
                     <ul className="list-none font-normal text-gray-700 dark:text-gray-400">
                         <li>Web - React</li>
                         <li>API + Token (jsonwebtoken)</li>
                         <li>Database MongoDB</li>
-                        <li>CI/CD</li>
                         <li>Docker</li>
                         <li>Github</li>
+                        <li>CI/CD</li>
                         <li>Swagger</li>
                     </ul>
                 </div>

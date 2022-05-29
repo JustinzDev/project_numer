@@ -6,6 +6,8 @@ services:
       - "80:80"
     volumes:
       - .:/app
+      - /app/node_modules
+
   api:
     build: ./api
     ports:
